@@ -12,6 +12,7 @@ void x86_config_load();
 void x86_config_save();
 void x86_set_fdd_boot(uint32_t boot);
 
+uint32_t x86_dma_get(uint32_t address);
 void x86_dma_set(uint32_t address, uint32_t data);
 void x86_dma_sendbuf(uint32_t address, uint32_t length, uint32_t *data);
 void x86_dma_recvbuf(uint32_t address, uint32_t length, uint32_t *data);

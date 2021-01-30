@@ -40,6 +40,7 @@
 #include "x86_share.h"
 #include "x86_ide.h"
 #include "x86_cdrom.h"
+#include "x86_opl3sw.h"
 
 #define FLOPPY0_BASE_OLD     0x8800
 #define HDD0_BASE_OLD        0x8840
@@ -56,6 +57,8 @@
 #define IMG_TYPE_FDD1_OLD    0x1800
 #define IMG_TYPE_HDD0_OLD    0x0000
 #define IMG_TYPE_HDD1_OLD    0x1000
+
+#define OPL3SW_BASE_NEW      0xA000
 
 #define HDD0_BASE_NEW        0xF000
 #define HDD1_BASE_NEW        0xF100
@@ -105,17 +108,15 @@ static uint16_t dma_sdio(int status)
 	return res;
 }
 
-/*
-static uint32_t dma_get(uint32_t address)
+uint32_t x86_dma_get(uint32_t address)
 {
 	EnableIO();
 	spi8(UIO_DMA_READ);
-	spi32w(address);
-	uint32_t res = spi32w(0);
+	spi32_w(address);
+	uint32_t res = v3 ? spi_w(0) : spi32_w(0);
 	DisableIO();
 	return res;
 }
-*/
 
 void x86_dma_set(uint32_t address, uint32_t data)
 {
@@ -581,6 +582,8 @@ void x86_init()
 	for (unsigned int i = 0; i < sizeof(cmos) / sizeof(cmos[0]); i++) IOWR(newcore ? RTC_BASE_NEW : RTC_BASE_OLD, i, cmos[i]);
 
 	x86_share_reset();
+	x86_opl3sw_reset();
+
 	user_io_8bit_set_status(0, UIO_STATUS_RESET);
 }
 
@@ -762,6 +765,7 @@ void x86_poll()
 	}
 
 	x86_share_poll();
+	x86_opl3sw_poll(OPL3SW_BASE_NEW);
 
 	uint16_t sd_req = dma_sdio(0);
 	if (sd_req)

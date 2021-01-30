@@ -24,6 +24,8 @@ INCLUDE += -I./lib/lzma
 INCLUDE += -I./lib/libchdr/include
 INCLUDE += -I./lib/flac/include
 INCLUDE += -I./lib/flac/src/include
+INCLUDE += -I./lib/asound
+INCLUDE += -I./lib/nukedopl3
 
 PRJ = MiSTer
 C_SRC =   $(wildcard *.c) \
@@ -32,6 +34,7 @@ C_SRC =   $(wildcard *.c) \
 	  $(wildcard ./lib/lzma/*.c) \
 	  $(wildcard ./lib/flac/src/*.c) \
 	  $(wildcard ./lib/libchdr/*.c) \
+	  $(wildcard ./lib/nukedopl3/*.c) \
           lib/libco/arm.c 
 
 CPP_SRC = $(wildcard *.cpp) \
@@ -41,13 +44,14 @@ CPP_SRC = $(wildcard *.cpp) \
 IMG =     $(wildcard *.png)
 
 IMLIB2_LIB  = -Llib/imlib2 -lfreetype -lbz2 -lpng16 -lz -lImlib2
+ASOUND_LIB  = -Llib/asound -l:libasound.so.2
 
 OBJ	= $(C_SRC:.c=.c.o) $(CPP_SRC:.cpp=.cpp.o) $(IMG:.png=.png.o)
 DEP	= $(C_SRC:.c=.c.d) $(CPP_SRC:.cpp=.cpp.d)
 
 DFLAGS	= $(INCLUDE) -D_7ZIP_ST -DPACKAGE_VERSION=\"1.3.3\" -DFLAC_API_EXPORTS -DFLAC__HAS_OGG=0 -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H -DENABLE_64_BIT_WORDS=0 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -DVDATE=\"`date +"%y%m%d"`\"
 CFLAGS	= $(DFLAGS) -Wall -Wextra -Wno-strict-aliasing -c -O3
-LFLAGS	= -lc -lstdc++ -lm -lrt $(IMLIB2_LIB) 
+LFLAGS	= -lc -lstdc++ -lm -lrt $(IMLIB2_LIB) $(ASOUND_LIB)
 
 $(PRJ): $(OBJ)
 	$(Q)$(info $@)
